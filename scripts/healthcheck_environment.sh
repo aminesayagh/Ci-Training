@@ -109,6 +109,8 @@ check_network() {
         virsh net-autostart default
     fi
 
+    # Skip internet connection check in CI
+    echo "CI environment: ${CI:-}"
     if [[ -n "${CI:-}" ]]; then
         echo "CI environment detected, skipping internet connection check"
         return
