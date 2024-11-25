@@ -1,0 +1,35 @@
+# Packer artifacts
+packer_cache/
+output-*/
+*.box
+
+# Environment variables
+.env
+*.env
+.envrc
+
+# VM related
+*.qcow2
+*.img
+*.iso
+
+# IDE specific
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+
+# OS specific
+.DS_Store
+*.swp
+*.swo
+
+# Variable files
+*.tfvars
+!example.tfvars
+
+# Logs
+*.log
+
+# Cache directories
+.cache/
