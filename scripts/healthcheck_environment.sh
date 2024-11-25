@@ -54,7 +54,7 @@ check_system_resources() {
 
     # Check RAM
     local total_ram_gb
-    total_ram_gb=$(free -g | awk '/^Mem:/ {print $2}')
+    total_ram_gb=$(free -g | awk '/^Mem:/{print $2}')
     if [[ $total_ram_gb -lt $MIN_RAM_GB ]]; then
         echo "Insufficient RAM: $total_ram_gb GB (required $MIN_RAM_GB GB)"
         exit 1
@@ -62,7 +62,7 @@ check_system_resources() {
 
     # Check disk space
     local total_disk_gb
-    total_disk_gb=$(df -g / | awk 'NR==2 {print $2}')
+    total_disk_gb=$(df -BG / | awk 'NR==2 {print $4}' | tr -d 'G')
     if [[ $total_disk_gb -lt $MIN_DISK_GB ]]; then
         echo "Insufficient disk space: $total_disk_gb GB (required $MIN_DISK_GB GB)"
         exit 1
