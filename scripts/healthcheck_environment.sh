@@ -125,6 +125,14 @@ check_permissions() {
     local current_user
     current_user=$(whoami)
 
+    # what if the group is not present?
+    for group in "${required_groups[@]}"; do
+        if ! getent group "$group" >/dev/null; then
+            echo "Group $group not found, creating..."
+            sudo groupadd "$group"
+        fi
+    done
+
     for group in "${required_groups[@]}"; do
         if ! groups "$current_user" | grep -q "\b$group\b"; then
             echo "Adding $current_user to $group"
