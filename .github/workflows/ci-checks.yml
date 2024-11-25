@@ -6,12 +6,15 @@ on:
   pull_request:
     branches: [main, develop]
 
+env:
+  CI: "true"
+  REPO_PATH: ${{ github.workspace }} # Path to the repository
+
 jobs:
   healthcheck:
     runs-on: ubuntu-latest
     env:
       REPO_PATH: ${{ github.workspace }} # Path to the repository
-      CI: "true" # This is a workaround to skip the internet connection check in CI
     steps:
       - uses: actions/checkout@v3
 
