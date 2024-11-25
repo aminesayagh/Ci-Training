@@ -110,8 +110,7 @@ check_network() {
     fi
 
     # Skip internet connection check in CI
-    echo "CI environment: ${CI:-}"
-    if [[ -n "${CI:-}" ]]; then
+    if [[ "${CI:-}" == "true" ]]; then
         echo "CI environment detected, skipping internet connection check"
         return
     fi
