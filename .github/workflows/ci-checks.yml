@@ -1,0 +1,23 @@
+name: CI Checks
+
+on:
+  push:
+    branches: [main, develop, feature/*]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  healthcheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up environment
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils
+
+      - name: Healthcheck environment
+        run: |
+          sudo chmod +x scripts/healthcheck_environment.sh
+          sudo ./scripts/healthcheck_environment.sh
