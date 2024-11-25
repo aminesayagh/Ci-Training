@@ -13,8 +13,6 @@ env:
 jobs:
   healthcheck:
     runs-on: ubuntu-latest
-    env:
-      REPO_PATH: ${{ github.workspace }} # Path to the repository
     steps:
       - uses: actions/checkout@v3
 
@@ -26,4 +24,5 @@ jobs:
       - name: Healthcheck environment
         run: |
           sudo chmod +x $REPO_PATH/scripts/healthcheck_environment.sh
-          sudo $REPO_PATH/scripts/healthcheck_environment.sh
+          # Use sudo -E to preserve the CI environment variable
+          sudo -E $REPO_PATH/scripts/healthcheck_environment.sh
