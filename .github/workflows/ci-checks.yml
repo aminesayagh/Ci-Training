@@ -9,6 +9,9 @@ on:
 jobs:
   healthcheck:
     runs-on: ubuntu-latest
+    env:
+      REPO_PATH: ${{ github.workspace }}
+      CI: true
     steps:
       - uses: actions/checkout@v3
 
@@ -19,5 +22,5 @@ jobs:
 
       - name: Healthcheck environment
         run: |
-          sudo chmod +x scripts/healthcheck_environment.sh
-          sudo ./scripts/healthcheck_environment.sh
+          sudo chmod +x $REPO_PATH/scripts/healthcheck_environment.sh
+          sudo $REPO_PATH/scripts/healthcheck_environment.sh
