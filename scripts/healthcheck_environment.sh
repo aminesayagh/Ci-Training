@@ -109,6 +109,11 @@ check_network() {
         virsh net-autostart default
     fi
 
+    if [[ -n "${CI:-}" ]]; then
+        echo "CI environment detected, skipping internet connection check"
+        return
+    fi
+
     # Check internet connection
     if ping -c 1 8.8.8.8 &>/dev/null; then
         echo "Internet connection detected"
