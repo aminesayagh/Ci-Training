@@ -9,6 +9,8 @@ on:
 env:
   CI: "true"
   REPO_PATH: ${{ github.workspace }} # Path to the repository
+  PACKER_VERSION: "1.9.4"
+  UBUNTU_VERSION: "22.04"
 
 jobs:
   healthcheck:
@@ -75,11 +77,26 @@ jobs:
           chmod 600 ~/.ssh/packer_key
           chmod 644 ~/.ssh/packer_key.pub
 
-      - name: Install packer
+      - name: Install HashiCorp GPG key
         run: |
-          curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
-          sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
-          sudo apt-get update && sudo apt-get install packer
+          wget -O- https://apt.releases.hashicorp.com/gpg | \
+            gpg --dearmor | \
+            sudo tee /usr/share/keyrings/hashicorp-archive-keyring.gpg
+
+      - name: Add HashiCorp repository
+        run: |
+          echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] \
+            https://apt.releases.hashicorp.com $(lsb_release -cs) main" | \
+            sudo tee /etc/apt/sources.list.d/hashicorp.list
+
+      - name: Install Packer
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y packer=${{ env.PACKER_VERSION }}*
+
+      - name: Check packer version
+        run: |
+          packer --version
 
       - name: Validate Packer Template
         run: |
@@ -94,6 +111,12 @@ jobs:
         if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
         uses: actions/upload-artifact@v3
         with:
-          name: vm-image
-          path: output-ubuntu-22.04/ubuntu-22.04.qcow2
+          name: vm-image-${{ env.UBUNTU_VERSION }}
+          path: output-ubuntu-${{ env.UBUNTU_VERSION }}/ubuntu-${{ env.UBUNTU_VERSION }}.qcow2
           retention-days: 1
+
+      - name: Cleanup
+        if: always()
+        run: |
+          sudo rm -rf output-ubuntu-*
+          sudo rm -rf ~/.ssh/packer_key*
