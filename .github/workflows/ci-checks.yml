@@ -86,9 +86,9 @@ jobs:
           chmod +x $REPO_PATH/scripts/build_vm.sh
           $REPO_PATH/scripts/build_vm.sh validate
 
-          - name: Build VM
-          if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
-          run: $REPO_PATH/scripts/build_vm.sh build
+      - name: Build VM
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
+        run: $REPO_PATH/scripts/build_vm.sh build
 
       - name: Store VM Image
         if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
