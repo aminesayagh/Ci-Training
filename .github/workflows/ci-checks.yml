@@ -57,3 +57,43 @@ jobs:
             ~/.ssh/packer_key
             ~/.ssh/packer_key.pub
           retention-days: 1
+
+  build-vm:
+    runs-on: ubuntu-latest
+    needs: setup-ssh
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Download SSH keys
+        uses: actions/download-artifact@v3
+        with:
+          name: ssh-keys
+          path: ~/.ssh
+
+      - name: Set SSH key permissions
+        run: |
+          chmod 600 ~/.ssh/packer_key
+          chmod 644 ~/.ssh/packer_key.pub
+
+      - name: Install packer
+        run: |
+          curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
+          sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+          sudo apt-get update && sudo apt-get install packer
+
+      - name: Validate Packer Template
+        run: |
+          chmod +x $REPO_PATH/scripts/build_vm.sh
+          $REPO_PATH/scripts/build_vm.sh validate
+
+          - name: Build VM
+          if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
+          run: $REPO_PATH/scripts/build_vm.sh build
+
+      - name: Store VM Image
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
+        uses: actions/upload-artifact@v3
+        with:
+          name: vm-image
+          path: output-ubuntu-22.04/ubuntu-22.04.qcow2
+          retention-days: 1
