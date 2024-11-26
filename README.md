@@ -124,15 +124,6 @@ sudo ./scripts/healthcheck_environment.sh
    - Step-by-step guides
    - Security considerations
 
-## Learning Objectives
-
-After working with this repository, students should understand:
-1. CI/CD pipeline structure and workflow
-2. Secure SSH key management
-3. Environment validation importance
-4. GitHub Actions configuration
-5. Infrastructure as Code principles
-
 ## Additional Resources
 
 1. **SSH Security**:
