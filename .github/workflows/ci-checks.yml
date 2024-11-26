@@ -1,0 +1,59 @@
+name: CI Checks
+
+on:
+  push:
+    branches: [main, develop, feature/*]
+  pull_request:
+    branches: [main, develop]
+
+env:
+  CI: "true"
+  REPO_PATH: ${{ github.workspace }} # Path to the repository
+
+jobs:
+  healthcheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up environment
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils
+
+      - name: Healthcheck environment
+        run: |
+          sudo chmod +x $REPO_PATH/scripts/healthcheck_environment.sh
+          # Use sudo -E to preserve the CI environment variable
+          sudo -E $REPO_PATH/scripts/healthcheck_environment.sh
+
+  setup-ssh:
+    runs-on: ubuntu-latest
+    needs: healthcheck
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Create SSH directory
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+
+      - name: Setup SSH
+        run: |
+          chmod +x $REPO_PATH/scripts/setup_ssh.sh && \
+          $REPO_PATH/scripts/setup_ssh.sh
+
+      - name: Healthcheck SSH setup
+        run: |
+          chmod +x $REPO_PATH/scripts/healthcheck_ssh_key.sh && \
+          $REPO_PATH/scripts/healthcheck_ssh_key.sh
+
+      - name: Store SSH keys as artifacts
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
+        uses: actions/upload-artifact@v3
+        with:
+          name: ssh-keys
+          path: |
+            ~/.ssh/packer_key
+            ~/.ssh/packer_key.pub
+          retention-days: 1
