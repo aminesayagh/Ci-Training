@@ -7,8 +7,8 @@ set -euo pipefail
 IFS=$'\n\t'
 
 # Default values
-DEFAULT_KEY_NAME="packer_key"
-DEFAULT_KEY_PATH="${HOME}/.ssh"
+KEY_NAME="packer_key"
+SSH_DIR="${HOME}/.ssh"
 KEY_TYPE="ed25519" # More secure than RSA
 KEY_COMMENT="packer@$(hostname)"
 
@@ -22,14 +22,14 @@ check_dependencies() {
 
 generate_ssh_key() {
     # Ensure the SSH directory exists with correct permissions
-    if [[ ! -d "${DEFAULT_KEY_PATH}" ]]; then
-        mkdir -p "${DEFAULT_KEY_PATH}"
-        chmod 700 "${DEFAULT_KEY_PATH}"
+    if [[ ! -d "${SSH_DIR}" ]]; then
+        mkdir -p "${SSH_DIR}"
+        chmod 700 "${SSH_DIR}"
     fi
 
     # Generate the key
     local key_file
-    key_file="${DEFAULT_KEY_PATH}/${DEFAULT_KEY_NAME}"
+    key_file="${SSH_DIR}/${KEY_NAME}"
 
     # Check if the key already exists
     if [[ -f "$key_file" ]]; then
@@ -47,7 +47,7 @@ generate_ssh_key() {
 # Create Packer variables file with SSH key information
 create_packer_vars() {
     local vars_file="packer/variables/ssh.pkrvars.hcl"
-    local key_file="${DEFAULT_KEY_PATH}/${DEFAULT_KEY_NAME}"
+    local key_file="${SSH_DIR}/${KEY_NAME}"
 
     # Create directory if it doesn't exist
     mkdir -p "$(dirname "$vars_file")"
@@ -67,7 +67,7 @@ EOF
 # Create cloud-init template for SSH key
 create_cloud_init_template() {
     local template_file="cloud-init/templates/ssh.yml.tpl"
-    local key_file="${DEFAULT_KEY_PATH}/${DEFAULT_KEY_NAME}"
+    local key_file="${SSH_DIR}/${KEY_NAME}"
 
     # Create directory if it doesn't exist
     mkdir -p "$(dirname "$template_file")"

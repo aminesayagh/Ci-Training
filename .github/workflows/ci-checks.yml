@@ -40,15 +40,13 @@ jobs:
 
       - name: Setup SSH
         run: |
-          chmod +x $REPO_PATH/scripts/setup_ssh.sh
+          chmod +x $REPO_PATH/scripts/setup_ssh.sh && \
           $REPO_PATH/scripts/setup_ssh.sh
 
-      - name: Verify SSH setup
+      - name: Healthcheck SSH setup
         run: |
-          test -f ~/.ssh/packer_key || (echo "SSH key not generated" && exit 1)
-          test -f ~/.ssh/packer_key.pub || (echo "SSH public key not generated" && exit 1)
-          test -f packer/variables/ssh.pkrvars.hcl || (echo "Packer variables not created" && exit 1)
-          test -f cloud-init/templates/ssh.yml.tpl || (echo "Cloud-init template not created" && exit 1)
+          chmod +x $REPO_PATH/scripts/healthcheck_ssh_key.sh && \
+          $REPO_PATH/scripts/healthcheck_ssh_key.sh
 
       - name: Store SSH keys as artifacts
         if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
@@ -59,4 +57,3 @@ jobs:
             ~/.ssh/packer_key
             ~/.ssh/packer_key.pub
           retention-days: 1
-    
