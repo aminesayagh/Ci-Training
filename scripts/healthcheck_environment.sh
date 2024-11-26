@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# healthcheck_environment.sh
 
 # Exit on error, unset variable, or pipe failure
 set -euo pipefail

@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# setup_ssh.sh
 
 # Exit on error, unset variables, and pipefail
 set -euo pipefail

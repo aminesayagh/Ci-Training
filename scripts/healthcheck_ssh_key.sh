@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# healthcheck_ssh_key.sh
 
 # Exit on error, unset variable, or pipe failure
 set -euo pipefail
